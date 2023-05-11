@@ -90,3 +90,9 @@ func WithSearchType(s string) ApiOption {
 		v.Add("searchType", s)
 	}
 }
+
+func WithIncludeMembers(b bool) ApiOption {
+	return func(v *url.Values) {
+		v.Add("includeMembers", strconv.FormatBool(b))
+	}
+}
