@@ -18,29 +18,32 @@ type UpdateAccountOperation struct {
 }
 
 type AccountDetails struct {
-	CategoryModificationTime  int    `json:"categoryModificationTime"`
-	PlatformId                string `json:"platformId"`
-	SafeName                  string `json:"safeName"`
-	Id                        string `json:"id"`
-	Name                      string `json:"name"`
-	Address                   string `json:"address"`
-	UserName                  string `json:"userName"`
-	SecretType                string `json:"secretType"`
-	Secret                    string `json:"secret"`
-	PlatformAccountProperties struct {
-	} `json:"platformAccountProperties"`
-	SecretManagement struct {
-		AutomaticManagementEnabled bool   `json:"automaticManagementEnabled"`
-		ManualManagementReason     string `json:"manualManagementReason"`
-		Status                     string `json:"status"`
-		LastModifiedTime           int    `json:"lastModifiedTime"`
-		LastReconciledTime         int    `json:"lastReconciledTime"`
-		LastVerifiedTime           int    `json:"lastVerifiedTime"`
-	} `json:"secretManagement"`
-	RemoteMachinesAccess struct {
-		RemoteMachines                   string `json:"remoteMachines"`
-		AccessRestrictedToRemoteMachines bool   `json:"accessRestrictedToRemoteMachines"`
-	} `json:"remoteMachinesAccess"`
-	CreatedTime  int `json:"createdTime"`
-	DeletionTime int `json:"deletionTime"`
+	CategoryModificationTime  int                   `json:"categoryModificationTime"`
+	PlatformId                string                `json:"platformId"`
+	SafeName                  string                `json:"safeName"`
+	Id                        string                `json:"id"`
+	Name                      string                `json:"name"`
+	Address                   string                `json:"address"`
+	UserName                  string                `json:"userName"`
+	SecretType                string                `json:"secretType"`
+	Secret                    string                `json:"secret"`
+	PlatformAccountProperties map[string]any        `json:"platformAccountProperties"`
+	SecretManagement          *SecretManagement     `json:"secretManagement"`
+	RemoteMachinesAccess      *RemoteMachinesAccess `json:"remoteMachinesAccess"`
+	CreatedTime               int                   `json:"createdTime"`
+	DeletionTime              int                   `json:"deletionTime"`
+}
+
+type SecretManagement struct {
+	AutomaticManagementEnabled bool   `json:"automaticManagementEnabled"`
+	ManualManagementReason     string `json:"manualManagementReason"`
+	Status                     string `json:"status"`
+	LastModifiedTime           int    `json:"lastModifiedTime"`
+	LastReconciledTime         int    `json:"lastReconciledTime"`
+	LastVerifiedTime           int    `json:"lastVerifiedTime"`
+}
+
+type RemoteMachinesAccess struct {
+	RemoteMachines                   string `json:"remoteMachines"`
+	AccessRestrictedToRemoteMachines bool   `json:"accessRestrictedToRemoteMachines"`
 }
