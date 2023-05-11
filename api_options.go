@@ -8,21 +8,22 @@ import (
 
 type ApiOption func(v *url.Values)
 
-func buildPath(path string, options ...ApiOption) (string, error) {
-	p, err := url.Parse("API/" + path)
+func (p *PVWA) buildPath(path string, options ...ApiOption) (string, error) {
+	_path, err := url.Parse("API/" + path)
 	if err != nil {
+		p.logIfEnabled(err.Error())
 		return "", err
 	}
 
-	v := p.Query()
+	v := _path.Query()
 
 	for _, option := range options {
 		option(&v)
 	}
 
-	p.RawQuery = v.Encode()
+	_path.RawQuery = v.Encode()
 
-	return p.String(), nil
+	return _path.String(), nil
 }
 
 func WithExtendedDetails(b bool) ApiOption {

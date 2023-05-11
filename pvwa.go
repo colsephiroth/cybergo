@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 	"syscall"
@@ -17,6 +18,7 @@ type PVWA struct {
 	username      string
 	password      string
 	authorization string
+	logging       bool
 	*http.Client
 }
 
@@ -25,6 +27,12 @@ type PVWAOption func(p *PVWA)
 func WithPassword(s string) PVWAOption {
 	return func(p *PVWA) {
 		p.password = s
+	}
+}
+
+func WithLogging(b bool) PVWAOption {
+	return func(p *PVWA) {
+		p.logging = b
 	}
 }
 
@@ -40,6 +48,7 @@ func NewPVWA(subdomain, username string, options ...PVWAOption) (*PVWA, error) {
 	}
 
 	if err := pvwa.Logon(); err != nil {
+		pvwa.logIfEnabled(err.Error())
 		return nil, err
 	}
 
@@ -54,6 +63,7 @@ func (p *PVWA) Logon() error {
 
 		passwordBytes, err := term.ReadPassword(int(syscall.Stdin))
 		if err != nil {
+			p.logIfEnabled(err.Error())
 			return err
 		}
 		fmt.Println()
@@ -67,14 +77,16 @@ func (p *PVWA) Logon() error {
 		"concurrentSession": true,
 	})
 	if err != nil {
+		p.logIfEnabled(err.Error())
 		return err
 	}
 
 	res, err := p.Client.Post(p.base+"API/auth/Cyberark/Logon", "application/json", bytes.NewBuffer(data))
 	if err != nil {
+		p.logIfEnabled(err.Error())
 		return err
 	}
-	defer res.Body.Close()
+	defer p.logIfError(res.Body.Close)
 
 	if res.StatusCode != 200 {
 		return fmt.Errorf("%d: %s", res.StatusCode, res.Status)
@@ -82,6 +94,7 @@ func (p *PVWA) Logon() error {
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
+		p.logIfEnabled(err.Error())
 		return err
 	}
 
@@ -93,6 +106,7 @@ func (p *PVWA) Logon() error {
 func (p *PVWA) Logoff() error {
 	req, err := http.NewRequest("POST", p.base+"API/auth/Logoff", nil)
 	if err != nil {
+		p.logIfEnabled(err.Error())
 		return err
 	}
 
@@ -100,6 +114,7 @@ func (p *PVWA) Logoff() error {
 
 	res, err := p.Client.Do(req)
 	if err != nil {
+		p.logIfEnabled(err.Error())
 		return err
 	}
 
@@ -113,6 +128,7 @@ func (p *PVWA) Logoff() error {
 func (p *PVWA) Get(path string) (io.ReadCloser, error) {
 	req, err := http.NewRequest(http.MethodGet, p.base+path, nil)
 	if err != nil {
+		p.logIfEnabled(err.Error())
 		return nil, err
 	}
 
@@ -120,6 +136,7 @@ func (p *PVWA) Get(path string) (io.ReadCloser, error) {
 
 	res, err := p.Client.Do(req)
 	if err != nil {
+		p.logIfEnabled(err.Error())
 		return nil, err
 	}
 
@@ -133,6 +150,7 @@ func (p *PVWA) Get(path string) (io.ReadCloser, error) {
 func (p *PVWA) Post(path string, data []byte) (io.ReadCloser, error) {
 	req, err := http.NewRequest(http.MethodPost, p.base+path, bytes.NewReader(data))
 	if err != nil {
+		p.logIfEnabled(err.Error())
 		return nil, err
 	}
 
@@ -141,6 +159,7 @@ func (p *PVWA) Post(path string, data []byte) (io.ReadCloser, error) {
 
 	res, err := p.Client.Do(req)
 	if err != nil {
+		p.logIfEnabled(err.Error())
 		return nil, err
 	}
 
@@ -154,6 +173,7 @@ func (p *PVWA) Post(path string, data []byte) (io.ReadCloser, error) {
 func (p *PVWA) Patch(path string, data []byte) (io.ReadCloser, error) {
 	req, err := http.NewRequest(http.MethodPatch, p.base+path, bytes.NewReader(data))
 	if err != nil {
+		p.logIfEnabled(err.Error())
 		return nil, err
 	}
 
@@ -162,6 +182,7 @@ func (p *PVWA) Patch(path string, data []byte) (io.ReadCloser, error) {
 
 	res, err := p.Client.Do(req)
 	if err != nil {
+		p.logIfEnabled(err.Error())
 		return nil, err
 	}
 
@@ -170,4 +191,16 @@ func (p *PVWA) Patch(path string, data []byte) (io.ReadCloser, error) {
 	}
 
 	return res.Body, nil
+}
+
+func (p *PVWA) logIfEnabled(s string) {
+	if p.logging {
+		log.Println(s)
+	}
+}
+
+func (p *PVWA) logIfError(f func() error) {
+	if err := f(); err != nil {
+		p.logIfEnabled(err.Error())
+	}
 }

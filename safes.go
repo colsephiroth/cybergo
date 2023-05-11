@@ -2,11 +2,10 @@ package cybergo
 
 import (
 	"encoding/json"
-	"log"
 )
 
 func (p *PVWA) GetSafes(options ...ApiOption) ([]*Safe, error) {
-	path, err := buildPath("Safes", options...)
+	path, err := p.buildPath("Safes", options...)
 	if err != nil {
 		return nil, err
 	}
@@ -14,7 +13,7 @@ func (p *PVWA) GetSafes(options ...ApiOption) ([]*Safe, error) {
 	var safes []*Safe
 
 	for {
-		log.Println(path)
+		p.logIfEnabled(path)
 
 		data := new(GenericResponse[*Safe])
 
@@ -27,7 +26,7 @@ func (p *PVWA) GetSafes(options ...ApiOption) ([]*Safe, error) {
 			return nil, err
 		}
 
-		LogIfError(res.Close)
+		p.logIfError(res.Close)
 
 		safes = append(safes, data.Value...)
 
@@ -42,7 +41,7 @@ func (p *PVWA) GetSafes(options ...ApiOption) ([]*Safe, error) {
 }
 
 func (p *PVWA) GetSafeMembers(safeUrlId string, options ...ApiOption) ([]*SafeMember, error) {
-	path, err := buildPath("Safes/"+safeUrlId+"/Members", options...)
+	path, err := p.buildPath("Safes/"+safeUrlId+"/Members", options...)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +49,7 @@ func (p *PVWA) GetSafeMembers(safeUrlId string, options ...ApiOption) ([]*SafeMe
 	var members []*SafeMember
 
 	for {
-		log.Println(path)
+		p.logIfEnabled(path)
 
 		data := new(GenericResponse[*SafeMember])
 
@@ -63,7 +62,7 @@ func (p *PVWA) GetSafeMembers(safeUrlId string, options ...ApiOption) ([]*SafeMe
 			return nil, err
 		}
 
-		LogIfError(res.Close)
+		p.logIfError(res.Close)
 
 		members = append(members, data.Value...)
 

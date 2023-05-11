@@ -2,18 +2,17 @@ package cybergo
 
 import (
 	"encoding/json"
-	"log"
 )
 
 func (p *PVWA) GetUsers(options ...ApiOption) ([]*UserDetails, error) {
 	var data GetUsersResponse
 
-	path, err := buildPath("Users", options...)
+	path, err := p.buildPath("Users", options...)
 	if err != nil {
 		return nil, err
 	}
 
-	log.Println(path)
+	p.logIfEnabled(path)
 
 	res, err := p.Get(path)
 	if err != nil {
@@ -24,7 +23,7 @@ func (p *PVWA) GetUsers(options ...ApiOption) ([]*UserDetails, error) {
 		return nil, err
 	}
 
-	LogIfError(res.Close)
+	p.logIfError(res.Close)
 
 	return data.Users, nil
 }

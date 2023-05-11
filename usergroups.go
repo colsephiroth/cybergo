@@ -2,11 +2,10 @@ package cybergo
 
 import (
 	"encoding/json"
-	"log"
 )
 
 func (p *PVWA) GetUserGroups(options ...ApiOption) ([]*UserGroup, error) {
-	path, err := buildPath("UserGroups", options...)
+	path, err := p.buildPath("UserGroups", options...)
 	if err != nil {
 		return nil, err
 	}
@@ -14,7 +13,7 @@ func (p *PVWA) GetUserGroups(options ...ApiOption) ([]*UserGroup, error) {
 	var groups []*UserGroup
 
 	for {
-		log.Println(path)
+		p.logIfEnabled(path)
 
 		data := new(GenericResponse[*UserGroup])
 
@@ -27,7 +26,7 @@ func (p *PVWA) GetUserGroups(options ...ApiOption) ([]*UserGroup, error) {
 			return nil, err
 		}
 
-		LogIfError(res.Close)
+		p.logIfError(res.Close)
 
 		groups = append(groups, data.Value...)
 
