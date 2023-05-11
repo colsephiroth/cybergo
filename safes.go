@@ -2,6 +2,7 @@ package cybergo
 
 import (
 	"encoding/json"
+	"io"
 	"log"
 )
 
@@ -20,7 +21,14 @@ func (p *PVWA) GetSafes(options ...ApiOption) ([]*Safe, error) {
 		return nil, err
 	}
 
-	if err := json.NewDecoder(res).Decode(&data); err != nil {
+	b, err := io.ReadAll(res)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Println(string(b))
+
+	if err := json.Unmarshal(b, &data); err != nil {
 		return nil, err
 	}
 
