@@ -6,6 +6,11 @@ import (
 	"strings"
 )
 
+type GetUsersResponse struct {
+	Users []*UserDetails `json:"Users"`
+	Total int            `json:"Total"`
+}
+
 type UserDetails struct {
 	ID                 int                       `json:"id,omitempty"`
 	Username           string                    `json:"username"`

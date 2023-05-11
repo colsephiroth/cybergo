@@ -2,39 +2,26 @@ package cybergo
 
 import (
 	"encoding/json"
-	"fmt"
-	"io"
 	"log"
 )
 
 func (p *PVWA) GetUsers(options ...GetUsersOption) ([]*UserDetails, error) {
-	var users []*UserDetails
+	var data GetUsersResponse
 
 	path := buildGetUsersPath(options...)
 
-	log.Println(path)
+	log.Println(path.String())
 
 	res, err := p.Get(path.String())
 	if err != nil {
 		return nil, err
 	}
 
-	b, err := io.ReadAll(res)
-	if err != nil {
-		return nil, err
-	}
-
-	fmt.Println(string(b))
-
-	if err := json.Unmarshal(b, &users); err != nil {
-		return nil, err
-	}
-
-	if err := json.NewDecoder(res).Decode(&users); err != nil {
+	if err := json.NewDecoder(res).Decode(&data); err != nil {
 		return nil, err
 	}
 
 	LogIfError(res.Close)
 
-	return users, nil
+	return data.Users, nil
 }
