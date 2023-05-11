@@ -13,17 +13,30 @@ import (
 )
 
 type PVWA struct {
-	Base          string
-	Username      string
-	Authorization string
+	base          string
+	username      string
+	password      string
+	authorization string
 	*http.Client
 }
 
-func NewPVWA(base, username string) (*PVWA, error) {
+type PVWAOption func(p *PVWA)
+
+func WithPassword(s string) PVWAOption {
+	return func(p *PVWA) {
+		p.password = s
+	}
+}
+
+func NewPVWA(base, username string, options ...PVWAOption) (*PVWA, error) {
 	pvwa := &PVWA{
-		Base:     base,
-		Username: username,
+		base:     base,
+		username: username,
 		Client:   http.DefaultClient,
+	}
+
+	for _, option := range options {
+		option(pvwa)
 	}
 
 	if err := pvwa.Logon(); err != nil {
@@ -34,25 +47,30 @@ func NewPVWA(base, username string) (*PVWA, error) {
 }
 
 func (p *PVWA) Logon() error {
-	fmt.Printf("Password for %s: ", p.Username)
+	password := p.password
 
-	passwordBytes, err := term.ReadPassword(syscall.Stdin)
-	if err != nil {
-		return err
+	if p.password == "" {
+		fmt.Printf("Password for %s: ", p.username)
+
+		passwordBytes, err := term.ReadPassword(syscall.Stdin)
+		if err != nil {
+			return err
+		}
+		fmt.Println()
+
+		password = string(passwordBytes)
 	}
 
-	fmt.Println()
-
-	data, err := json.Marshal(map[string]interface{}{
-		"username":          p.Username,
-		"password":          string(passwordBytes),
+	data, err := json.Marshal(map[string]any{
+		"username":          p.username,
+		"password":          password,
 		"concurrentSession": true,
 	})
 	if err != nil {
 		return err
 	}
 
-	res, err := p.Client.Post(p.Base+"API/auth/Cyberark/Logon", "application/json", bytes.NewBuffer(data))
+	res, err := p.Client.Post(p.base+"API/auth/Cyberark/Logon", "application/json", bytes.NewBuffer(data))
 	if err != nil {
 		return err
 	}
@@ -67,18 +85,18 @@ func (p *PVWA) Logon() error {
 		return err
 	}
 
-	p.Authorization = strings.ReplaceAll(string(body), "\"", "")
+	p.authorization = strings.ReplaceAll(string(body), "\"", "")
 
 	return nil
 }
 
 func (p *PVWA) Logoff() error {
-	req, err := http.NewRequest("POST", p.Base+"API/auth/Logoff", nil)
+	req, err := http.NewRequest("POST", p.base+"API/auth/Logoff", nil)
 	if err != nil {
 		return err
 	}
 
-	req.Header.Add("Authorization", p.Authorization)
+	req.Header.Add("Authorization", p.authorization)
 
 	res, err := p.Client.Do(req)
 	if err != nil {
@@ -93,12 +111,12 @@ func (p *PVWA) Logoff() error {
 }
 
 func (p *PVWA) Get(path string) (io.ReadCloser, error) {
-	req, err := http.NewRequest(http.MethodGet, p.Base+path, nil)
+	req, err := http.NewRequest(http.MethodGet, p.base+path, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Add("Authorization", p.Authorization)
+	req.Header.Add("Authorization", p.authorization)
 
 	res, err := p.Client.Do(req)
 	if err != nil {
@@ -113,12 +131,12 @@ func (p *PVWA) Get(path string) (io.ReadCloser, error) {
 }
 
 func (p *PVWA) Post(path string, data []byte) (io.ReadCloser, error) {
-	req, err := http.NewRequest(http.MethodPost, p.Base+path, bytes.NewReader(data))
+	req, err := http.NewRequest(http.MethodPost, p.base+path, bytes.NewReader(data))
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("Authorization", p.Authorization)
+	req.Header.Set("Authorization", p.authorization)
 	req.Header.Set("Content-Type", "application/json")
 
 	res, err := p.Client.Do(req)
@@ -134,12 +152,12 @@ func (p *PVWA) Post(path string, data []byte) (io.ReadCloser, error) {
 }
 
 func (p *PVWA) Patch(path string, data []byte) (io.ReadCloser, error) {
-	req, err := http.NewRequest(http.MethodPatch, p.Base+path, bytes.NewReader(data))
+	req, err := http.NewRequest(http.MethodPatch, p.base+path, bytes.NewReader(data))
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("Authorization", p.Authorization)
+	req.Header.Set("Authorization", p.authorization)
 	req.Header.Set("Content-Type", "application/json")
 
 	res, err := p.Client.Do(req)
