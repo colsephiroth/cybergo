@@ -2,8 +2,6 @@ package cybergo
 
 import (
 	"encoding/json"
-	"fmt"
-	"io"
 	"log"
 )
 
@@ -44,32 +42,37 @@ func (p *PVWA) GetSafes(options ...ApiOption) ([]*Safe, error) {
 }
 
 func (p *PVWA) GetSafeMembers(safeUrlId string, options ...ApiOption) ([]*SafeMember, error) {
-	var data []*SafeMember
-
 	path, err := buildPath("Safes/"+safeUrlId+"/Members", options...)
 	if err != nil {
 		return nil, err
 	}
 
-	log.Println(path)
+	var members []*SafeMember
 
-	res, err := p.Get(path)
-	if err != nil {
-		return nil, err
+	for {
+		log.Println(path)
+
+		data := new(GenericResponse[*SafeMember])
+
+		res, err := p.Get(path)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := json.NewDecoder(res).Decode(&data); err != nil {
+			return nil, err
+		}
+
+		LogIfError(res.Close)
+
+		members = append(members, data.Value...)
+
+		if data.NextLink != "" {
+			path = data.NextLink
+		} else {
+			break
+		}
 	}
 
-	b, err := io.ReadAll(res)
-	if err != nil {
-		return nil, err
-	}
-
-	fmt.Println(string(b))
-
-	if err := json.Unmarshal(b, &data); err != nil {
-		return nil, err
-	}
-
-	LogIfError(res.Close)
-
-	return data, nil
+	return members, nil
 }
