@@ -28,9 +28,9 @@ func WithPassword(s string) PVWAOption {
 	}
 }
 
-func NewPVWA(base, username string, options ...PVWAOption) (*PVWA, error) {
+func NewPVWA(subdomain, username string, options ...PVWAOption) (*PVWA, error) {
 	pvwa := &PVWA{
-		base:     base,
+		base:     fmt.Sprintf("https://%s.privilegecloud.cyberark.com/PasswordVault/", subdomain),
 		username: username,
 		Client:   http.DefaultClient,
 	}
