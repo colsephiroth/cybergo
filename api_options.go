@@ -96,3 +96,15 @@ func WithIncludeMembers(b bool) ApiOption {
 		v.Add("includeMembers", strconv.FormatBool(b))
 	}
 }
+
+func WithUseCache(b bool) ApiOption {
+	return func(v *url.Values) {
+		v.Add("useCache", strconv.FormatBool(b))
+	}
+}
+
+func WithIncludeAccounts(b bool) ApiOption {
+	return func(v *url.Values) {
+		v.Add("includeAccounts", strconv.FormatBool(b))
+	}
+}
