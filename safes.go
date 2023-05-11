@@ -2,6 +2,7 @@ package cybergo
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 )
@@ -61,6 +62,8 @@ func (p *PVWA) GetSafeMembers(safeUrlId string, options ...ApiOption) ([]*SafeMe
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Println(string(b))
 
 	if err := json.Unmarshal(b, &data); err != nil {
 		return nil, err
