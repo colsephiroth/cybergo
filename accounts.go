@@ -16,7 +16,7 @@ func (p *PVWA) GetAccounts(options ...ApiOption) ([]*AccountDetails, error) {
 	for {
 		log.Println(path)
 
-		data := new(GetAccountsResponse)
+		data := new(GenericResponse[*AccountDetails])
 
 		res, err := p.Get(path)
 		if err != nil {

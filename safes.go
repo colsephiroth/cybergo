@@ -2,37 +2,41 @@ package cybergo
 
 import (
 	"encoding/json"
-	"io"
 	"log"
 )
 
 func (p *PVWA) GetSafes(options ...ApiOption) ([]*Safe, error) {
-	var data []*Safe
-
 	path, err := buildPath("Safes", options...)
 	if err != nil {
 		return nil, err
 	}
 
-	log.Println(path)
+	var safes []*Safe
 
-	res, err := p.Get(path)
-	if err != nil {
-		return nil, err
+	for {
+		log.Println(path)
+
+		data := new(GenericResponse[*Safe])
+
+		res, err := p.Get(path)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := json.NewDecoder(res).Decode(&data); err != nil {
+			return nil, err
+		}
+
+		LogIfError(res.Close)
+
+		safes = append(safes, data.Value...)
+
+		if data.NextLink != "" {
+			path = data.NextLink
+		} else {
+			break
+		}
 	}
 
-	b, err := io.ReadAll(res)
-	if err != nil {
-		return nil, err
-	}
-
-	log.Println(string(b))
-
-	if err := json.Unmarshal(b, &data); err != nil {
-		return nil, err
-	}
-
-	LogIfError(res.Close)
-
-	return data, nil
+	return safes, nil
 }

@@ -1,7 +1,5 @@
 package cybergo
 
-type GetSafesResponse struct{}
-
 type Safe struct {
 	SafeNumber                int            `json:"safeNumber,omitempty"`
 	Location                  string         `json:"location,omitempty"`

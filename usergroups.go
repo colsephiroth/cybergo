@@ -16,7 +16,7 @@ func (p *PVWA) GetUserGroups(options ...ApiOption) ([]*UserGroup, error) {
 	for {
 		log.Println(path)
 
-		data := new(GetUserGroupsResponse)
+		data := new(GenericResponse[*UserGroup])
 
 		res, err := p.Get(path)
 		if err != nil {

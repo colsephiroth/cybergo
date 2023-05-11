@@ -1,11 +1,5 @@
 package cybergo
 
-type GetUserGroupsResponse struct {
-	Value    []*UserGroup `json:"value,omitempty"`
-	Count    int          `json:"count,omitempty"`
-	NextLink string       `json:"nextLink,omitempty"`
-}
-
 type UserGroup struct {
 	ID          int                 `json:"id,omitempty"`
 	GroupType   string              `json:"groupType,omitempty"`

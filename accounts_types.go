@@ -10,12 +10,6 @@ type GetAccountsOptions struct {
 	SearchType  *string
 }
 
-type GetAccountsResponse struct {
-	Value    []*AccountDetails `json:"value"`
-	Count    int               `json:"count"`
-	NextLink string            `json:"nextLink"`
-}
-
 type UpdateAccountOperation struct {
 	Op    string `json:"op,omitempty"`
 	Path  string `json:"path,omitempty"`
