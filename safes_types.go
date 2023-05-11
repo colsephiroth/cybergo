@@ -27,3 +27,18 @@ type SafeAccount struct {
 	ID   string `json:"id,omitempty"`
 	Name string `json:"name,omitempty"`
 }
+
+type SafeMember struct {
+	SafeUrlId                 string `json:"safeUrlId,omitempty"`
+	SafeName                  string `json:"safeName,omitempty"`
+	SafeNumber                int    `json:"safeNumber,omitempty"`
+	MemberId                  string `json:"memberId,omitempty"`
+	MemberName                string `json:"memberName,omitempty"`
+	MemberType                string `json:"memberType,omitempty"`
+	MembershipExpirationDate  int    `json:"membershipExpirationDate,omitempty"`
+	IsExpiredMembershipEnable bool   `json:"isExpiredMembershipEnable,omitempty"`
+	IsPredefinedUser          bool   `json:"isPredefinedUser,omitempty"`
+	IsReadOnly                bool   `json:"isReadOnly,omitempty"`
+	// todo figure out what this is
+	Permissions any `json:"permissions,omitempty"`
+}
