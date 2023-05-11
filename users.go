@@ -5,14 +5,17 @@ import (
 	"log"
 )
 
-func (p *PVWA) GetUsers(options ...GetUsersOption) ([]*UserDetails, error) {
+func (p *PVWA) GetUsers(options ...ApiOption) ([]*UserDetails, error) {
 	var data GetUsersResponse
 
-	path := buildGetUsersPath(options...)
+	path, err := buildPath("Users", options...)
+	if err != nil {
+		return nil, err
+	}
 
-	log.Println(path.String())
+	log.Println(path)
 
-	res, err := p.Get(path.String())
+	res, err := p.Get(path)
 	if err != nil {
 		return nil, err
 	}
