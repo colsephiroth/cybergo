@@ -62,5 +62,5 @@ func (p *PVWA) GetSafeMembers(safeUrlId string, options ...ApiOption) ([]*SafeMe
 
 	LogIfError(res.Close)
 
-	return data.Users, nil
+	return data, nil
 }
