@@ -52,7 +52,7 @@ func (p *PVWA) Logon() error {
 	if p.password == "" {
 		fmt.Printf("Password for %s: ", p.username)
 
-		passwordBytes, err := term.ReadPassword(syscall.Stdin)
+		passwordBytes, err := term.ReadPassword(int(syscall.Stdin))
 		if err != nil {
 			return err
 		}
