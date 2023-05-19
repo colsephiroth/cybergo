@@ -1,4 +1,4 @@
-package cybergo
+package pvwa
 
 import (
 	"net/url"
@@ -11,7 +11,6 @@ type ApiOption func(v *url.Values)
 func (p *PVWA) buildPath(path string, options ...ApiOption) (string, error) {
 	_path, err := url.Parse("API/" + path)
 	if err != nil {
-		p.logIfEnabled(err.Error())
 		return "", err
 	}
 

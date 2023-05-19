@@ -1,4 +1,4 @@
-package cybergo
+package pvwa
 
 import (
 	"bytes"
@@ -22,21 +22,21 @@ type PVWA struct {
 	*http.Client
 }
 
-type PVWAOption func(p *PVWA)
+type Option func(p *PVWA)
 
-func WithPassword(s string) PVWAOption {
+func WithPassword(s string) Option {
 	return func(p *PVWA) {
 		p.password = s
 	}
 }
 
-func WithLogging(b bool) PVWAOption {
+func WithLogging(b bool) Option {
 	return func(p *PVWA) {
 		p.logging = b
 	}
 }
 
-func NewPVWA(subdomain, username string, options ...PVWAOption) (*PVWA, error) {
+func New(subdomain, username string, options ...Option) (*PVWA, error) {
 	pvwa := &PVWA{
 		base:     fmt.Sprintf("https://%s.privilegecloud.cyberark.com/PasswordVault/", subdomain),
 		username: username,

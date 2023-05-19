@@ -1,4 +1,4 @@
-package cybergo
+package pvwa
 
 type GetAccountsOptions struct {
 	SavedFilter *int

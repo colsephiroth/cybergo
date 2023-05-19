@@ -1,4 +1,4 @@
-package cybergo
+package pvwa
 
 type GetUsersResponse struct {
 	Users []*UserDetails `json:"Users"`

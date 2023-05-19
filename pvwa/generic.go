@@ -1,4 +1,4 @@
-package cybergo
+package pvwa
 
 type GenericResponse[T any] struct {
 	Value    []T    `json:"value,omitempty"`

@@ -1,4 +1,4 @@
-package cybergo
+package pvwa
 
 import (
 	"encoding/json"

@@ -1,4 +1,4 @@
-package cybergo
+package pvwa
 
 type UserGroup struct {
 	ID          int                 `json:"id,omitempty"`

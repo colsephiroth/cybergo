@@ -1,4 +1,4 @@
-package cybergo
+package pvwa
 
 type Safe struct {
 	SafeNumber                int            `json:"safeNumber,omitempty"`
