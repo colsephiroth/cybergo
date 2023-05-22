@@ -8,7 +8,7 @@ import (
 type ApiOption func(v *url.Values)
 
 func (c *CCP) buildPath(path string, options ...ApiOption) (string, error) {
-	_path, err := url.Parse("API/" + path)
+	_path, err := url.Parse(path)
 	if err != nil {
 		return "", err
 	}
