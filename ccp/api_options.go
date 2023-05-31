@@ -5,92 +5,81 @@ import (
 	"strconv"
 )
 
-type ApiOption func(v *url.Values)
+func buildPath(path string, query *url.Values) string {
+	_path, _ := url.Parse(path)
 
-func (c *CCP) buildPath(path string, options ...ApiOption) (string, error) {
-	_path, err := url.Parse(path)
-	if err != nil {
-		return "", err
-	}
+	_path.RawQuery = query.Encode()
 
-	v := _path.Query()
-
-	for _, option := range options {
-		option(&v)
-	}
-
-	_path.RawQuery = v.Encode()
-
-	return _path.String(), nil
+	return _path.String()
 }
 
-func WithSafe(s string) ApiOption {
+func withSafe(s string) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("Safe", s)
 	}
 }
 
-func WithFolder(s string) ApiOption {
+func withFolder(s string) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("Folder", s)
 	}
 }
 
-func WithObject(s string) ApiOption {
+func withObject(s string) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("Object", s)
 	}
 }
 
-func WithUserName(s string) ApiOption {
+func withUserName(s string) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("UserName", s)
 	}
 }
 
-func WithAddress(s string) ApiOption {
+func withAddress(s string) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("Address", s)
 	}
 }
 
-func WithDatabase(s string) ApiOption {
+func withDatabase(s string) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("Database", s)
 	}
 }
 
-func WithPolicyID(s string) ApiOption {
+func withPolicyID(s string) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("PolicyID", s)
 	}
 }
 
-func WithReason(s string) ApiOption {
+func withReason(s string) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("Reason", s)
 	}
 }
 
-func WithConnectionTimeout(i int) ApiOption {
+func withConnectionTimeout(i int) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("ConnectionTimeout", strconv.Itoa(i))
 	}
 }
 
-func WithQuery(s string) ApiOption {
+func withQuery(s string) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("Query", s)
 	}
 }
 
-func WithQueryFormat(s string) ApiOption {
+func withQueryFormat(s string) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("QueryFormat", s)
 	}
 }
 
-func WithFailRequestOnPasswordChange(b bool) ApiOption {
+func withFailRequestOnPasswordChange(b bool) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("FailRequestOnPasswordChange", strconv.FormatBool(b))
 	}
