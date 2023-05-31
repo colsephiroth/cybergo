@@ -8,7 +8,13 @@ import (
 func buildPath(path string, query *url.Values) string {
 	_path, _ := url.Parse(path)
 
-	_path.RawQuery = _path.Query().Encode() + query.Encode()
+	values := _path.Query()
+
+	for k, v := range *query {
+		values.Set(k, v[0])
+	}
+
+	_path.RawQuery = values.Encode()
 
 	return _path.String()
 }
