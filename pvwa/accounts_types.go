@@ -1,15 +1,5 @@
 package pvwa
 
-type GetAccountsOptions struct {
-	SavedFilter *int
-	Search      *string
-	Sort        *[]string
-	Offset      *int
-	Limit       *int
-	Filter      *string
-	SearchType  *string
-}
-
 type UpdateAccountOperation struct {
 	Op    string `json:"op,omitempty"`
 	Path  string `json:"path,omitempty"`

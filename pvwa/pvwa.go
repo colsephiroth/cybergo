@@ -22,21 +22,21 @@ type PVWA struct {
 	*http.Client
 }
 
-type Option func(p *PVWA)
+type InitOption func(p *PVWA)
 
-func WithPassword(s string) Option {
+func WithPassword(s string) InitOption {
 	return func(p *PVWA) {
 		p.password = s
 	}
 }
 
-func WithLogging(b bool) Option {
+func WithLogging(b bool) InitOption {
 	return func(p *PVWA) {
 		p.logging = b
 	}
 }
 
-func New(subdomain, username string, options ...Option) (*PVWA, error) {
+func New(subdomain, username string, options ...InitOption) (*PVWA, error) {
 	pvwa := &PVWA{
 		base:     fmt.Sprintf("https://%s.privilegecloud.cyberark.com/PasswordVault/", subdomain),
 		username: username,

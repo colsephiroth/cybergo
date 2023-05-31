@@ -2,34 +2,41 @@ package pvwa
 
 import (
 	"encoding/json"
+	"net/url"
 )
 
-func (p *PVWA) GetAccounts(options ...ApiOption) ([]*AccountDetails, error) {
-	path, err := p.buildPath("Accounts", options...)
-	if err != nil {
-		p.logIfEnabled(err.Error())
-		return nil, err
+// GetAccounts This method returns a list of all the accounts in the Vault. The user who runs this web
+// service requires List Accounts permission in the Safe.
+func (p *PVWA) GetAccounts() *GetAccountsOptions {
+	return &GetAccountsOptions{
+		path:  "API/Accounts",
+		query: new(url.Values),
+		pvwa:  p,
 	}
+}
+
+func (a *GetAccountsOptions) Run() ([]*AccountDetails, error) {
+	path := buildPath(a.path, a.query)
 
 	var accounts []*AccountDetails
 
 	for {
-		p.logIfEnabled(path)
+		a.pvwa.logIfEnabled(path)
 
 		data := new(GenericResponse[*AccountDetails])
 
-		res, err := p.Get(path)
+		res, err := a.pvwa.Get(path)
 		if err != nil {
-			p.logIfEnabled(err.Error())
+			a.pvwa.logIfEnabled(err.Error())
 			return nil, err
 		}
 
 		if err := json.NewDecoder(res).Decode(&data); err != nil {
-			p.logIfEnabled(err.Error())
+			a.pvwa.logIfEnabled(err.Error())
 			return nil, err
 		}
 
-		p.logIfError(res.Close)
+		a.pvwa.logIfError(res.Close)
 
 		accounts = append(accounts, data.Value...)
 
@@ -43,54 +50,83 @@ func (p *PVWA) GetAccounts(options ...ApiOption) ([]*AccountDetails, error) {
 	return accounts, nil
 }
 
-func (p *PVWA) GetAccountDetails(id string) (*AccountDetails, error) {
-	path, err := p.buildPath("Accounts/" + id)
-	if err != nil {
-		p.logIfEnabled(err.Error())
-		return nil, err
+// GetAccountDetails This method returns information about an account identified by its id. The user who
+// runs this web service requires List Accounts permission in the Vault.
+func (p *PVWA) GetAccountDetails(id string) *GetAccountDetailsOptions {
+	return &GetAccountDetailsOptions{
+		path:  "API/Accounts/" + id,
+		query: new(url.Values),
+		pvwa:  p,
 	}
+}
+
+func (a *GetAccountDetailsOptions) Run() (*AccountDetails, error) {
+	path := buildPath(a.path, a.query)
 
 	account := new(AccountDetails)
 
-	res, err := p.Get(path)
+	res, err := a.pvwa.Get(path)
 	if err != nil {
-		p.logIfEnabled(err.Error())
+		a.pvwa.logIfEnabled(err.Error())
 		return nil, err
 	}
-	defer p.logIfError(res.Close)
+	defer a.pvwa.logIfError(res.Close)
 
 	if err := json.NewDecoder(res).Decode(&account); err != nil {
-		p.logIfEnabled(err.Error())
+		a.pvwa.logIfEnabled(err.Error())
 		return nil, err
 	}
 
 	return account, nil
 }
 
-func (p *PVWA) UpdateAccount(id string, ops []UpdateAccountOperation) (*AccountDetails, error) {
-	path, err := p.buildPath("Accounts/" + id)
-	if err != nil {
-		p.logIfEnabled(err.Error())
-		return nil, err
+// UpdateAccount This method updates an existing account's details. It isn't mandatory to send all
+// the account’s details. Any values sent in the request that were changed will be updated. All other
+// properties values will remain the same.
+//
+// On each property, the following are the allowed operations:
+//   - Replace (to replace the existing value of that property)
+//   - Remove (to remove the property from the account)
+//   - Add (to add that property to the account)
+//
+// It is possible to set several properties using the same command using the following structure:
+//
+//	{
+//		"op": "replace",
+//		"path": "/platformaccountproperties",
+//		"value": "{\"{PropertyID1}\":\"{Value}\",\"{PropertyID2}\":\"{Value}\",\"{PropertyID3}\":\"{Value}\"}"
+//	}
+//
+// When sending several operations on the same property – only the last operation will affect.
+func (p *PVWA) UpdateAccount(id string, ops []UpdateAccountOperation) *UpdateAccountOptions {
+	return &UpdateAccountOptions{
+		path:       "API/Accounts/" + id,
+		query:      new(url.Values),
+		pvwa:       p,
+		operations: ops,
 	}
+}
+
+func (a *UpdateAccountOptions) Run() (*AccountDetails, error) {
+	path := buildPath(a.path, a.query)
 
 	account := new(AccountDetails)
 
-	data, err := json.Marshal(ops)
+	data, err := json.Marshal(a.operations)
 	if err != nil {
-		p.logIfEnabled(err.Error())
+		a.pvwa.logIfEnabled(err.Error())
 		return nil, err
 	}
 
-	res, err := p.Patch(path, data)
+	res, err := a.pvwa.Patch(path, data)
 	if err != nil {
-		p.logIfEnabled(err.Error())
+		a.pvwa.logIfEnabled(err.Error())
 		return nil, err
 	}
-	defer p.logIfError(res.Close)
+	defer a.pvwa.logIfError(res.Close)
 
 	if err := json.NewDecoder(res).Decode(&account); err != nil {
-		p.logIfEnabled(err.Error())
+		a.pvwa.logIfEnabled(err.Error())
 		return nil, err
 	}
 

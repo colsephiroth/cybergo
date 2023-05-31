@@ -38,3 +38,28 @@ func InSlice[T comparable](item T, slice []T) bool {
 	}
 	return false
 }
+
+type Option[T any] struct {
+	value T
+	valid bool
+}
+
+func (o *Option[T]) Some(t T) Option[T] {
+	o.valid = true
+	o.value = t
+	return *o
+}
+
+func (o *Option[T]) None() {
+	var none T
+	o.valid = false
+	o.value = none
+}
+
+func (o *Option[T]) Value() T {
+	return o.value
+}
+
+func (o *Option[T]) Valid() bool {
+	return o.valid
+}

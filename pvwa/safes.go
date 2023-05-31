@@ -2,22 +2,30 @@ package pvwa
 
 import (
 	"encoding/json"
+	"net/url"
 )
 
-func (p *PVWA) GetSafes(options ...ApiOption) ([]*Safe, error) {
-	path, err := p.buildPath("Safes", options...)
-	if err != nil {
-		return nil, err
+// GetSafes This method returns a list of all Safes in the Vault that the user has permissions for.
+// The user who runs this web service must be a member of the Safes in the Vault that are returned in the list.
+func (p *PVWA) GetSafes() *GetSafesOptions {
+	return &GetSafesOptions{
+		path:  "API/Safes",
+		query: new(url.Values),
+		pvwa:  p,
 	}
+}
+
+func (s *GetSafesOptions) Run() ([]*Safe, error) {
+	path := buildPath(s.path, s.query)
 
 	var safes []*Safe
 
 	for {
-		p.logIfEnabled(path)
+		s.pvwa.logIfEnabled(path)
 
 		data := new(GenericResponse[*Safe])
 
-		res, err := p.Get(path)
+		res, err := s.pvwa.Get(path)
 		if err != nil {
 			return nil, err
 		}
@@ -26,7 +34,7 @@ func (p *PVWA) GetSafes(options ...ApiOption) ([]*Safe, error) {
 			return nil, err
 		}
 
-		p.logIfError(res.Close)
+		s.pvwa.logIfError(res.Close)
 
 		safes = append(safes, data.Value...)
 
@@ -40,20 +48,27 @@ func (p *PVWA) GetSafes(options ...ApiOption) ([]*Safe, error) {
 	return safes, nil
 }
 
-func (p *PVWA) GetSafeMembers(safeUrlId string, options ...ApiOption) ([]*SafeMember, error) {
-	path, err := p.buildPath("Safes/"+safeUrlId+"/Members", options...)
-	if err != nil {
-		return nil, err
+// GetSafeMembers This method returns the list of members of a Safe. The user who run this web
+// service must have View Safe Members permissions on the Safe.
+func (p *PVWA) GetSafeMembers(safeUrlId string) *GetSafeMembersOptions {
+	return &GetSafeMembersOptions{
+		path:  "API/Safes" + safeUrlId + "/Members",
+		query: new(url.Values),
+		pvwa:  p,
 	}
+}
+
+func (s *GetSafeMembersOptions) Run() ([]*SafeMember, error) {
+	path := buildPath(s.path, s.query)
 
 	var members []*SafeMember
 
 	for {
-		p.logIfEnabled(path)
+		s.pvwa.logIfEnabled(path)
 
 		data := new(GenericResponse[*SafeMember])
 
-		res, err := p.Get(path)
+		res, err := s.pvwa.Get(path)
 		if err != nil {
 			return nil, err
 		}
@@ -62,7 +77,7 @@ func (p *PVWA) GetSafeMembers(safeUrlId string, options ...ApiOption) ([]*SafeMe
 			return nil, err
 		}
 
-		p.logIfError(res.Close)
+		s.pvwa.logIfError(res.Close)
 
 		members = append(members, data.Value...)
 

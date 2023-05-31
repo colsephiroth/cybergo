@@ -6,104 +6,93 @@ import (
 	"strings"
 )
 
-type ApiOption func(v *url.Values)
+func buildPath(path string, query *url.Values) string {
+	_path, _ := url.Parse(path)
 
-func (p *PVWA) buildPath(path string, options ...ApiOption) (string, error) {
-	_path, err := url.Parse("API/" + path)
-	if err != nil {
-		return "", err
-	}
+	_path.RawQuery = query.Encode()
 
-	v := _path.Query()
-
-	for _, option := range options {
-		option(&v)
-	}
-
-	_path.RawQuery = v.Encode()
-
-	return _path.String(), nil
+	return _path.String()
 }
 
-func WithExtendedDetails(b bool) ApiOption {
+func withExtendedDetails(b bool) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("ExtendedDetails", strconv.FormatBool(b))
 	}
 }
 
-func WithSearch(s string) ApiOption {
+func withSearch(s string) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("search", s)
 	}
 }
 
-func WithSort(s []string) ApiOption {
+func withSort(s []string) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("sort", strings.Join(s, ","))
 	}
 }
 
-func WithUserName(s string) ApiOption {
+func withUserName(s string) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("userName", s)
 	}
 }
 
-func WithUserType(s string) ApiOption {
+func withUserType(s string) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("userType", s)
 	}
 }
 
-func WithComponentUser(b bool) ApiOption {
+func withComponentUser(b bool) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("componentUser", strconv.FormatBool(b))
 	}
 }
 
-func WithSavedFilter(i int) ApiOption {
+func withSavedFilter(i int) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("savedFilter", strconv.Itoa(i))
 	}
 }
 
-func WithOffset(i int) ApiOption {
+func withOffset(i int) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("offset", strconv.Itoa(i))
 	}
 }
 
-func WithLimit(i int) ApiOption {
+func withLimit(i int) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("limit", strconv.Itoa(i))
 	}
 }
 
-func WithFilter(s string) ApiOption {
+func withFilter(s string) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("filter", s)
 	}
 }
 
-func WithSearchType(s string) ApiOption {
+func withSearchType(s string) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("searchType", s)
 	}
 }
 
-func WithIncludeMembers(b bool) ApiOption {
+func withIncludeMembers(b bool) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("includeMembers", strconv.FormatBool(b))
 	}
 }
 
-func WithUseCache(b bool) ApiOption {
+func withUseCache(b bool) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("useCache", strconv.FormatBool(b))
 	}
 }
 
-func WithIncludeAccounts(b bool) ApiOption {
+func withIncludeAccounts(b bool) func(v *url.Values) {
 	return func(v *url.Values) {
 		v.Add("includeAccounts", strconv.FormatBool(b))
 	}
