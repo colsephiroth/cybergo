@@ -17,7 +17,7 @@ import (
 func (p *PVWA) GetUsers() *GetUsersOptions {
 	return &GetUsersOptions{
 		path:  "API/Users",
-		query: new(url.Values),
+		query: &url.Values{},
 		pvwa:  p,
 	}
 }

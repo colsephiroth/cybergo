@@ -10,7 +10,7 @@ import (
 func (p *PVWA) GetSafes() *GetSafesOptions {
 	return &GetSafesOptions{
 		path:  "API/Safes",
-		query: new(url.Values),
+		query: &url.Values{},
 		pvwa:  p,
 	}
 }
@@ -53,7 +53,7 @@ func (s *GetSafesOptions) Run() ([]*Safe, error) {
 func (p *PVWA) GetSafeMembers(safeUrlId string) *GetSafeMembersOptions {
 	return &GetSafeMembersOptions{
 		path:  "API/Safes" + safeUrlId + "/Members",
-		query: new(url.Values),
+		query: &url.Values{},
 		pvwa:  p,
 	}
 }

@@ -10,7 +10,7 @@ import (
 func (p *PVWA) GetAccounts() *GetAccountsOptions {
 	return &GetAccountsOptions{
 		path:  "API/Accounts",
-		query: new(url.Values),
+		query: &url.Values{},
 		pvwa:  p,
 	}
 }
@@ -55,7 +55,7 @@ func (a *GetAccountsOptions) Run() ([]*AccountDetails, error) {
 func (p *PVWA) GetAccountDetails(id string) *GetAccountDetailsOptions {
 	return &GetAccountDetailsOptions{
 		path:  "API/Accounts/" + id,
-		query: new(url.Values),
+		query: &url.Values{},
 		pvwa:  p,
 	}
 }
@@ -101,7 +101,7 @@ func (a *GetAccountDetailsOptions) Run() (*AccountDetails, error) {
 func (p *PVWA) UpdateAccount(id string, ops []UpdateAccountOperation) *UpdateAccountOptions {
 	return &UpdateAccountOptions{
 		path:       "API/Accounts/" + id,
-		query:      new(url.Values),
+		query:      &url.Values{},
 		pvwa:       p,
 		operations: ops,
 	}

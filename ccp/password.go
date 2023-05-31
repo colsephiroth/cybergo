@@ -13,7 +13,7 @@ import (
 func (c *CCP) GetPassword() *GetPasswordOptions {
 	return &GetPasswordOptions{
 		path:  c.path,
-		query: new(url.Values),
+		query: &url.Values{},
 		ccp:   c,
 	}
 }

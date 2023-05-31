@@ -16,7 +16,7 @@ import (
 func (p *PVWA) GetUserGroups() *GetUserGroupsOptions {
 	return &GetUserGroupsOptions{
 		path:  "/Api/UserGroups",
-		query: new(url.Values),
+		query: &url.Values{},
 		pvwa:  p,
 	}
 }
