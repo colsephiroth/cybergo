@@ -1,7 +1,6 @@
 package pvwa
 
 import (
-	"encoding/json"
 	"net/url"
 )
 
@@ -16,36 +15,7 @@ func (p *PVWA) GetSafes() *GetSafesOptions {
 }
 
 func (s *GetSafesOptions) Run() ([]*Safe, error) {
-	path := buildPath(s.path, s.query)
-
-	var safes []*Safe
-
-	for {
-		s.pvwa.logIfEnabled(path)
-
-		data := new(GenericResponse[*Safe])
-
-		res, err := s.pvwa.Get(path)
-		if err != nil {
-			return nil, err
-		}
-
-		if err := json.NewDecoder(res).Decode(&data); err != nil {
-			return nil, err
-		}
-
-		s.pvwa.logIfError(res.Close)
-
-		safes = append(safes, data.Value...)
-
-		if data.NextLink != "" {
-			path = data.NextLink
-		} else {
-			break
-		}
-	}
-
-	return safes, nil
+	return genericGetReturnSlice[Safe](s.pvwa, s.path, s.query)
 }
 
 // GetSafeMembers This method returns the list of members of a Safe. The user who run this web
@@ -59,34 +29,20 @@ func (p *PVWA) GetSafeMembers(safeUrlId string) *GetSafeMembersOptions {
 }
 
 func (s *GetSafeMembersOptions) Run() ([]*SafeMember, error) {
-	path := buildPath(s.path, s.query)
+	return genericGetReturnSlice[SafeMember](s.pvwa, s.path, s.query)
+}
 
-	var members []*SafeMember
-
-	for {
-		s.pvwa.logIfEnabled(path)
-
-		data := new(GenericResponse[*SafeMember])
-
-		res, err := s.pvwa.Get(path)
-		if err != nil {
-			return nil, err
-		}
-
-		if err := json.NewDecoder(res).Decode(&data); err != nil {
-			return nil, err
-		}
-
-		s.pvwa.logIfError(res.Close)
-
-		members = append(members, data.Value...)
-
-		if data.NextLink != "" {
-			path = data.NextLink
-		} else {
-			break
-		}
+// UpdateSafeMembers This method adds an existing user as a Safe member. The user who runs
+// this web service must have Manage Safe Members permissions in the Vault.
+func (p *PVWA) UpdateSafeMembers(safeUrlId string, user *SafeMember) *UpdateSafeMembersOptions {
+	return &UpdateSafeMembersOptions{
+		path:  "API/Safes/" + safeUrlId + "/members",
+		query: &url.Values{},
+		pvwa:  p,
+		user:  user,
 	}
+}
 
-	return members, nil
+func (s *UpdateSafeMembersOptions) Run() (*SafeMember, error) {
+	return genericUpdateReturnSingle[*SafeMember, SafeMember](s.pvwa, s.path, s.query, s.user)
 }

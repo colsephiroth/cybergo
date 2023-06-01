@@ -14,6 +14,13 @@ type GetSafeMembersOptions struct {
 	pvwa  *PVWA
 }
 
+type UpdateSafeMembersOptions struct {
+	path  string
+	query *url.Values
+	pvwa  *PVWA
+	user  *SafeMember
+}
+
 // WithLimit The maximum number of Safes that are returned.
 func (s *GetSafesOptions) WithLimit(i int) *GetSafesOptions {
 	withLimit(i)(s.query)

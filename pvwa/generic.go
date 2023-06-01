@@ -1,9 +1,97 @@
 package pvwa
 
+import (
+	"encoding/json"
+	"net/url"
+)
+
 type GenericResponse[T any] struct {
 	Value    []T    `json:"value,omitempty"`
 	Count    int    `json:"count,omitempty"`
 	NextLink string `json:"nextLink,omitempty"`
+}
+
+func genericGetReturnSingle[R any](pvwa *PVWA, path string, query *url.Values) (*R, error) {
+	_path := buildPath(path, query)
+
+	response := new(R)
+
+	pvwa.logIfEnabled(_path)
+
+	res, err := pvwa.Get(_path)
+	if err != nil {
+		pvwa.logIfEnabled(err.Error())
+		return nil, err
+	}
+	defer pvwa.logIfError(res.Close)
+
+	if err := json.NewDecoder(res).Decode(&response); err != nil {
+		pvwa.logIfEnabled(err.Error())
+		return nil, err
+	}
+
+	return response, nil
+}
+
+func genericGetReturnSlice[R any](pvwa *PVWA, path string, query *url.Values) ([]*R, error) {
+	_path := buildPath(path, query)
+
+	var response []*R
+
+	for {
+		pvwa.logIfEnabled(_path)
+
+		data := new(GenericResponse[*R])
+
+		res, err := pvwa.Get(_path)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := json.NewDecoder(res).Decode(&data); err != nil {
+			return nil, err
+		}
+
+		pvwa.logIfError(res.Close)
+
+		response = append(response, data.Value...)
+
+		if data.NextLink != "" {
+			path = data.NextLink
+		} else {
+			break
+		}
+	}
+
+	return response, nil
+}
+
+func genericUpdateReturnSingle[T, R any](pvwa *PVWA, path string, query *url.Values, data T) (*R, error) {
+	_path := buildPath(path, query)
+
+	response := new(R)
+
+	pvwa.logIfEnabled(_path)
+
+	_data, err := json.Marshal(data)
+	if err != nil {
+		pvwa.logIfEnabled(err.Error())
+		return nil, err
+	}
+
+	res, err := pvwa.Post(_path, _data)
+	if err != nil {
+		pvwa.logIfEnabled(err.Error())
+		return nil, err
+	}
+	defer pvwa.logIfError(res.Close)
+
+	if err := json.NewDecoder(res).Decode(&response); err != nil {
+		pvwa.logIfEnabled(err.Error())
+		return nil, err
+	}
+
+	return response, nil
 }
 
 func Intersection[T comparable](s1, s2 []T) []T {
@@ -48,12 +136,6 @@ func (o *Option[T]) Some(t T) Option[T] {
 	o.valid = true
 	o.value = t
 	return *o
-}
-
-func (o *Option[T]) None() {
-	var none T
-	o.valid = false
-	o.value = none
 }
 
 func (o *Option[T]) Value() T {

@@ -1,7 +1,6 @@
 package pvwa
 
 import (
-	"encoding/json"
 	"net/url"
 )
 
@@ -16,38 +15,7 @@ func (p *PVWA) GetAccounts() *GetAccountsOptions {
 }
 
 func (a *GetAccountsOptions) Run() ([]*AccountDetails, error) {
-	path := buildPath(a.path, a.query)
-
-	var accounts []*AccountDetails
-
-	for {
-		a.pvwa.logIfEnabled(path)
-
-		data := new(GenericResponse[*AccountDetails])
-
-		res, err := a.pvwa.Get(path)
-		if err != nil {
-			a.pvwa.logIfEnabled(err.Error())
-			return nil, err
-		}
-
-		if err := json.NewDecoder(res).Decode(&data); err != nil {
-			a.pvwa.logIfEnabled(err.Error())
-			return nil, err
-		}
-
-		a.pvwa.logIfError(res.Close)
-
-		accounts = append(accounts, data.Value...)
-
-		if data.NextLink != "" {
-			path = data.NextLink
-		} else {
-			break
-		}
-	}
-
-	return accounts, nil
+	return genericGetReturnSlice[AccountDetails](a.pvwa, a.path, a.query)
 }
 
 // GetAccountDetails This method returns information about an account identified by its id. The user who
@@ -61,23 +29,7 @@ func (p *PVWA) GetAccountDetails(id string) *GetAccountDetailsOptions {
 }
 
 func (a *GetAccountDetailsOptions) Run() (*AccountDetails, error) {
-	path := buildPath(a.path, a.query)
-
-	account := new(AccountDetails)
-
-	res, err := a.pvwa.Get(path)
-	if err != nil {
-		a.pvwa.logIfEnabled(err.Error())
-		return nil, err
-	}
-	defer a.pvwa.logIfError(res.Close)
-
-	if err := json.NewDecoder(res).Decode(&account); err != nil {
-		a.pvwa.logIfEnabled(err.Error())
-		return nil, err
-	}
-
-	return account, nil
+	return genericGetReturnSingle[AccountDetails](a.pvwa, a.path, a.query)
 }
 
 // UpdateAccount This method updates an existing account's details. It isn't mandatory to send all
@@ -108,27 +60,5 @@ func (p *PVWA) UpdateAccount(id string, ops []UpdateAccountOperation) *UpdateAcc
 }
 
 func (a *UpdateAccountOptions) Run() (*AccountDetails, error) {
-	path := buildPath(a.path, a.query)
-
-	account := new(AccountDetails)
-
-	data, err := json.Marshal(a.operations)
-	if err != nil {
-		a.pvwa.logIfEnabled(err.Error())
-		return nil, err
-	}
-
-	res, err := a.pvwa.Patch(path, data)
-	if err != nil {
-		a.pvwa.logIfEnabled(err.Error())
-		return nil, err
-	}
-	defer a.pvwa.logIfError(res.Close)
-
-	if err := json.NewDecoder(res).Decode(&account); err != nil {
-		a.pvwa.logIfEnabled(err.Error())
-		return nil, err
-	}
-
-	return account, nil
+	return genericUpdateReturnSingle[[]UpdateAccountOperation, AccountDetails](a.pvwa, a.path, a.query, a.operations)
 }

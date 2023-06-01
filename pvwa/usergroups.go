@@ -1,7 +1,6 @@
 package pvwa
 
 import (
-	"encoding/json"
 	"net/url"
 )
 
@@ -22,34 +21,5 @@ func (p *PVWA) GetUserGroups() *GetUserGroupsOptions {
 }
 
 func (u *GetUserGroupsOptions) Run() ([]*UserGroup, error) {
-	path := buildPath(u.path, u.query)
-
-	var groups []*UserGroup
-
-	for {
-		u.pvwa.logIfEnabled(path)
-
-		data := new(GenericResponse[*UserGroup])
-
-		res, err := u.pvwa.Get(path)
-		if err != nil {
-			return nil, err
-		}
-
-		if err := json.NewDecoder(res).Decode(&data); err != nil {
-			return nil, err
-		}
-
-		u.pvwa.logIfError(res.Close)
-
-		groups = append(groups, data.Value...)
-
-		if data.NextLink != "" {
-			path = data.NextLink
-		} else {
-			break
-		}
-	}
-
-	return groups, nil
+	return genericGetReturnSlice[UserGroup](u.pvwa, u.path, u.query)
 }
