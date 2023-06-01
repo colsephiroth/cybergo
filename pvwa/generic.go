@@ -57,7 +57,7 @@ func genericGetReturnSlice[R any](pvwa *PVWA, path string, query *url.Values) ([
 		response = append(response, data.Value...)
 
 		if data.NextLink != "" {
-			path = data.NextLink
+			_path = data.NextLink
 		} else {
 			break
 		}
