@@ -44,5 +44,5 @@ func (p *PVWA) UpdateSafeMembers(safeUrlId string, user *SafeMember) *UpdateSafe
 }
 
 func (s *UpdateSafeMembersOptions) Run() (*SafeMember, error) {
-	return genericUpdateReturnSingle[*SafeMember, SafeMember](s.pvwa, s.path, s.query, s.user)
+	return genericPostReturnSingle[*SafeMember, SafeMember](s.pvwa, s.path, s.query, s.user)
 }

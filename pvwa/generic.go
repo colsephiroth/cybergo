@@ -16,7 +16,7 @@ func genericGetReturnSingle[R any](pvwa *PVWA, path string, query *url.Values) (
 
 	response := new(R)
 
-	pvwa.logIfEnabled(_path)
+	pvwa.logIfEnabled("GET " + _path)
 
 	res, err := pvwa.Get(_path)
 	if err != nil {
@@ -39,7 +39,7 @@ func genericGetReturnSlice[R any](pvwa *PVWA, path string, query *url.Values) ([
 	var response []*R
 
 	for {
-		pvwa.logIfEnabled(_path)
+		pvwa.logIfEnabled("GET " + _path)
 
 		data := new(GenericResponse[*R])
 
@@ -66,12 +66,12 @@ func genericGetReturnSlice[R any](pvwa *PVWA, path string, query *url.Values) ([
 	return response, nil
 }
 
-func genericUpdateReturnSingle[T, R any](pvwa *PVWA, path string, query *url.Values, data T) (*R, error) {
+func genericPostReturnSingle[T, R any](pvwa *PVWA, path string, query *url.Values, data T) (*R, error) {
 	_path := buildPath(path, query)
 
 	response := new(R)
 
-	pvwa.logIfEnabled(_path)
+	pvwa.logIfEnabled("POST " + _path)
 
 	_data, err := json.Marshal(data)
 	if err != nil {
@@ -80,6 +80,34 @@ func genericUpdateReturnSingle[T, R any](pvwa *PVWA, path string, query *url.Val
 	}
 
 	res, err := pvwa.Post(_path, _data)
+	if err != nil {
+		pvwa.logIfEnabled(err.Error())
+		return nil, err
+	}
+	defer pvwa.logIfError(res.Close)
+
+	if err := json.NewDecoder(res).Decode(&response); err != nil {
+		pvwa.logIfEnabled(err.Error())
+		return nil, err
+	}
+
+	return response, nil
+}
+
+func genericPatchReturnSingle[T, R any](pvwa *PVWA, path string, query *url.Values, data T) (*R, error) {
+	_path := buildPath(path, query)
+
+	response := new(R)
+
+	pvwa.logIfEnabled("PATCH " + _path)
+
+	_data, err := json.Marshal(data)
+	if err != nil {
+		pvwa.logIfEnabled(err.Error())
+		return nil, err
+	}
+
+	res, err := pvwa.Patch(_path, _data)
 	if err != nil {
 		pvwa.logIfEnabled(err.Error())
 		return nil, err

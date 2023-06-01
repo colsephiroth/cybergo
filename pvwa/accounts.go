@@ -60,5 +60,5 @@ func (p *PVWA) UpdateAccount(id string, ops []UpdateAccountOperation) *UpdateAcc
 }
 
 func (a *UpdateAccountOptions) Run() (*AccountDetails, error) {
-	return genericUpdateReturnSingle[[]UpdateAccountOperation, AccountDetails](a.pvwa, a.path, a.query, a.operations)
+	return genericPatchReturnSingle[[]UpdateAccountOperation, AccountDetails](a.pvwa, a.path, a.query, a.operations)
 }
