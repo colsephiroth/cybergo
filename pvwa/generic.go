@@ -2,6 +2,7 @@ package pvwa
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/url"
 )
 
@@ -71,7 +72,7 @@ func genericPostReturnSingle[T, R any](pvwa *PVWA, path string, query *url.Value
 
 	response := new(R)
 
-	pvwa.logIfEnabled("POST " + _path)
+	pvwa.logIfEnabled(fmt.Sprintf("POST %s %#v", _path, data))
 
 	_data, err := json.Marshal(data)
 	if err != nil {
@@ -99,7 +100,7 @@ func genericPatchReturnSingle[T, R any](pvwa *PVWA, path string, query *url.Valu
 
 	response := new(R)
 
-	pvwa.logIfEnabled("PATCH " + _path)
+	pvwa.logIfEnabled(fmt.Sprintf("PATCH %s %#v", _path, data))
 
 	_data, err := json.Marshal(data)
 	if err != nil {
