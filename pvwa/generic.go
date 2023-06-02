@@ -72,13 +72,13 @@ func genericPostReturnSingle[T, R any](pvwa *PVWA, path string, query *url.Value
 
 	response := new(R)
 
-	pvwa.logIfEnabled(fmt.Sprintf("POST %s %#v", _path, data))
-
 	_data, err := json.Marshal(data)
 	if err != nil {
 		pvwa.logIfEnabled(err.Error())
 		return nil, err
 	}
+
+	pvwa.logIfEnabled(fmt.Sprintf("POST %s %s", _path, string(_data)))
 
 	res, err := pvwa.Post(_path, _data)
 	if err != nil {
@@ -100,13 +100,13 @@ func genericPatchReturnSingle[T, R any](pvwa *PVWA, path string, query *url.Valu
 
 	response := new(R)
 
-	pvwa.logIfEnabled(fmt.Sprintf("PATCH %s %#v", _path, data))
-
 	_data, err := json.Marshal(data)
 	if err != nil {
 		pvwa.logIfEnabled(err.Error())
 		return nil, err
 	}
+
+	pvwa.logIfEnabled(fmt.Sprintf("PATCH %s %#v", _path, string(_data)))
 
 	res, err := pvwa.Patch(_path, _data)
 	if err != nil {

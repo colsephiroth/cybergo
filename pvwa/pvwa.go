@@ -128,7 +128,6 @@ func (p *PVWA) Logoff() error {
 func (p *PVWA) Get(path string) (io.ReadCloser, error) {
 	req, err := http.NewRequest(http.MethodGet, p.base+path, nil)
 	if err != nil {
-		p.logIfEnabled(err.Error())
 		return nil, err
 	}
 
@@ -136,12 +135,16 @@ func (p *PVWA) Get(path string) (io.ReadCloser, error) {
 
 	res, err := p.Client.Do(req)
 	if err != nil {
-		p.logIfEnabled(err.Error())
 		return nil, err
 	}
 
 	if !httpStatusSuccess(res.StatusCode) {
-		return nil, fmt.Errorf("%d: %s", res.StatusCode, res.Status)
+		body, err := io.ReadAll(res.Body)
+		if err != nil {
+			return nil, err
+		}
+		p.logIfError(res.Body.Close)
+		return nil, fmt.Errorf("%s: %s", res.Status, string(body))
 	}
 
 	return res.Body, nil
@@ -150,7 +153,6 @@ func (p *PVWA) Get(path string) (io.ReadCloser, error) {
 func (p *PVWA) Post(path string, data []byte) (io.ReadCloser, error) {
 	req, err := http.NewRequest(http.MethodPost, p.base+path, bytes.NewReader(data))
 	if err != nil {
-		p.logIfEnabled(err.Error())
 		return nil, err
 	}
 
@@ -159,12 +161,16 @@ func (p *PVWA) Post(path string, data []byte) (io.ReadCloser, error) {
 
 	res, err := p.Client.Do(req)
 	if err != nil {
-		p.logIfEnabled(err.Error())
 		return nil, err
 	}
 
 	if !httpStatusSuccess(res.StatusCode) {
-		return nil, fmt.Errorf("%d: %s", res.StatusCode, res.Status)
+		body, err := io.ReadAll(res.Body)
+		if err != nil {
+			return nil, err
+		}
+		p.logIfError(res.Body.Close)
+		return nil, fmt.Errorf("%s: %s", res.Status, string(body))
 	}
 
 	return res.Body, nil
@@ -173,7 +179,6 @@ func (p *PVWA) Post(path string, data []byte) (io.ReadCloser, error) {
 func (p *PVWA) Patch(path string, data []byte) (io.ReadCloser, error) {
 	req, err := http.NewRequest(http.MethodPatch, p.base+path, bytes.NewReader(data))
 	if err != nil {
-		p.logIfEnabled(err.Error())
 		return nil, err
 	}
 
@@ -182,12 +187,16 @@ func (p *PVWA) Patch(path string, data []byte) (io.ReadCloser, error) {
 
 	res, err := p.Client.Do(req)
 	if err != nil {
-		p.logIfEnabled(err.Error())
 		return nil, err
 	}
 
 	if !httpStatusSuccess(res.StatusCode) {
-		return nil, fmt.Errorf("%d: %s", res.StatusCode, res.Status)
+		body, err := io.ReadAll(res.Body)
+		if err != nil {
+			return nil, err
+		}
+		p.logIfError(res.Body.Close)
+		return nil, fmt.Errorf("%s: %s", res.Status, string(body))
 	}
 
 	return res.Body, nil
