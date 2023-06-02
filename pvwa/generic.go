@@ -174,3 +174,7 @@ func (o *Option[T]) Value() T {
 func (o *Option[T]) Valid() bool {
 	return o.valid
 }
+
+func httpStatusSuccess(code int) bool {
+	return code >= 200 && code < 300
+}

@@ -140,7 +140,7 @@ func (p *PVWA) Get(path string) (io.ReadCloser, error) {
 		return nil, err
 	}
 
-	if res.StatusCode != 200 {
+	if !httpStatusSuccess(res.StatusCode) {
 		return nil, fmt.Errorf("%d: %s", res.StatusCode, res.Status)
 	}
 
@@ -163,7 +163,7 @@ func (p *PVWA) Post(path string, data []byte) (io.ReadCloser, error) {
 		return nil, err
 	}
 
-	if res.StatusCode != 200 {
+	if !httpStatusSuccess(res.StatusCode) {
 		return nil, fmt.Errorf("%d: %s", res.StatusCode, res.Status)
 	}
 
@@ -186,7 +186,7 @@ func (p *PVWA) Patch(path string, data []byte) (io.ReadCloser, error) {
 		return nil, err
 	}
 
-	if res.StatusCode != 200 {
+	if !httpStatusSuccess(res.StatusCode) {
 		return nil, fmt.Errorf("%d: %s", res.StatusCode, res.Status)
 	}
 
