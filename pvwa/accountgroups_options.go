@@ -7,8 +7,3 @@ type GetAccountGroupsOptions struct {
 	query *url.Values
 	pvwa  *PVWA
 }
-
-func (a *GetAccountGroupsOptions) WithSafe(s string) *GetAccountGroupsOptions {
-	withSafe(s)(a.query)
-	return a
-}
