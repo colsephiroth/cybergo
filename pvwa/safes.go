@@ -22,7 +22,7 @@ func (s *GetSafesOptions) Run() ([]*Safe, error) {
 // service must have View Safe Members permissions on the Safe.
 func (p *PVWA) GetSafeMembers(safeUrlId string) *GetSafeMembersOptions {
 	return &GetSafeMembersOptions{
-		path:  "API/Safes" + safeUrlId + "/Members",
+		path:  "API/Safes/" + safeUrlId + "/Members",
 		query: &url.Values{},
 		pvwa:  p,
 	}
