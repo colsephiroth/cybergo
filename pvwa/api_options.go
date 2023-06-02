@@ -97,3 +97,9 @@ func withIncludeAccounts(b bool) func(v *url.Values) {
 		v.Add("includeAccounts", strconv.FormatBool(b))
 	}
 }
+
+func withSafe(s string) func(v *url.Values) {
+	return func(v *url.Values) {
+		v.Add("safe", s)
+	}
+}
