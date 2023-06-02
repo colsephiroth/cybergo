@@ -13,5 +13,5 @@ func (p *PVWA) GetAccountGroups(safe string) *GetAccountGroupsOptions {
 }
 
 func (a *GetAccountGroupsOptions) Run() ([]*AccountGroup, error) {
-	return genericGetReturnSlice[AccountGroup](a.pvwa, a.path, a.query)
+	return getSingleRequestReturnSlice[AccountGroup](a.pvwa, a.path, a.query)
 }

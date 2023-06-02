@@ -15,7 +15,7 @@ func (p *PVWA) GetAccounts() *GetAccountsOptions {
 }
 
 func (a *GetAccountsOptions) Run() ([]*AccountDetails, error) {
-	return genericGetReturnSlice[AccountDetails](a.pvwa, a.path, a.query)
+	return getMultipleRequestReturnSlice[AccountDetails](a.pvwa, a.path, a.query)
 }
 
 // GetAccountDetails This method returns information about an account identified by its id. The user who
@@ -29,7 +29,7 @@ func (p *PVWA) GetAccountDetails(id string) *GetAccountDetailsOptions {
 }
 
 func (a *GetAccountDetailsOptions) Run() (*AccountDetails, error) {
-	return genericGetReturnSingle[AccountDetails](a.pvwa, a.path, a.query)
+	return getReturnSingle[AccountDetails](a.pvwa, a.path, a.query)
 }
 
 // UpdateAccount This method updates an existing account's details. It isn't mandatory to send all
@@ -60,5 +60,5 @@ func (p *PVWA) UpdateAccount(id string, ops []UpdateAccountOperation) *UpdateAcc
 }
 
 func (a *UpdateAccountOptions) Run() (*AccountDetails, error) {
-	return genericPatchReturnSingle[[]UpdateAccountOperation, AccountDetails](a.pvwa, a.path, a.query, a.operations)
+	return patchReturnSingle[[]UpdateAccountOperation, AccountDetails](a.pvwa, a.path, a.query, a.operations)
 }

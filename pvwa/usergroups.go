@@ -21,5 +21,5 @@ func (p *PVWA) GetUserGroups() *GetUserGroupsOptions {
 }
 
 func (u *GetUserGroupsOptions) Run() ([]*UserGroup, error) {
-	return genericGetReturnSlice[UserGroup](u.pvwa, u.path, u.query)
+	return getMultipleRequestReturnSlice[UserGroup](u.pvwa, u.path, u.query)
 }

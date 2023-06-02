@@ -15,7 +15,7 @@ func (p *PVWA) GetSafes() *GetSafesOptions {
 }
 
 func (s *GetSafesOptions) Run() ([]*Safe, error) {
-	return genericGetReturnSlice[Safe](s.pvwa, s.path, s.query)
+	return getMultipleRequestReturnSlice[Safe](s.pvwa, s.path, s.query)
 }
 
 // GetSafeMembers This method returns the list of members of a Safe. The user who run this web
@@ -29,7 +29,7 @@ func (p *PVWA) GetSafeMembers(safeUrlId string) *GetSafeMembersOptions {
 }
 
 func (s *GetSafeMembersOptions) Run() ([]*SafeMember, error) {
-	return genericGetReturnSlice[SafeMember](s.pvwa, s.path, s.query)
+	return getMultipleRequestReturnSlice[SafeMember](s.pvwa, s.path, s.query)
 }
 
 // UpdateSafeMembers This method adds an existing user as a Safe member. The user who runs
@@ -44,5 +44,5 @@ func (p *PVWA) UpdateSafeMembers(safeUrlId string, user *SafeMember) *UpdateSafe
 }
 
 func (s *UpdateSafeMembersOptions) Run() (*SafeMember, error) {
-	return genericPostReturnSingle[*SafeMember, SafeMember](s.pvwa, s.path, s.query, s.user)
+	return postReturnSingle[*SafeMember, SafeMember](s.pvwa, s.path, s.query, s.user)
 }

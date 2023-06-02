@@ -12,7 +12,7 @@ type GenericResponse[T any] struct {
 	NextLink string `json:"nextLink,omitempty"`
 }
 
-func genericGetReturnSingle[R any](pvwa *PVWA, path string, query *url.Values) (*R, error) {
+func getReturnSingle[R any](pvwa *PVWA, path string, query *url.Values) (*R, error) {
 	_path := buildPath(path, query)
 
 	response := new(R)
@@ -34,7 +34,28 @@ func genericGetReturnSingle[R any](pvwa *PVWA, path string, query *url.Values) (
 	return response, nil
 }
 
-func genericGetReturnSlice[R any](pvwa *PVWA, path string, query *url.Values) ([]*R, error) {
+func getSingleRequestReturnSlice[R any](pvwa *PVWA, path string, query *url.Values) ([]*R, error) {
+	_path := buildPath(path, query)
+
+	pvwa.logIfEnabled("GET " + _path)
+
+	var response []*R
+
+	res, err := pvwa.Get(_path)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := json.NewDecoder(res).Decode(&response); err != nil {
+		return nil, err
+	}
+
+	pvwa.logIfError(res.Close)
+
+	return response, nil
+}
+
+func getMultipleRequestReturnSlice[R any](pvwa *PVWA, path string, query *url.Values) ([]*R, error) {
 	_path := buildPath(path, query)
 
 	var response []*R
@@ -67,7 +88,7 @@ func genericGetReturnSlice[R any](pvwa *PVWA, path string, query *url.Values) ([
 	return response, nil
 }
 
-func genericPostReturnSingle[T, R any](pvwa *PVWA, path string, query *url.Values, data T) (*R, error) {
+func postReturnSingle[T, R any](pvwa *PVWA, path string, query *url.Values, data T) (*R, error) {
 	_path := buildPath(path, query)
 
 	response := new(R)
@@ -95,7 +116,7 @@ func genericPostReturnSingle[T, R any](pvwa *PVWA, path string, query *url.Value
 	return response, nil
 }
 
-func genericPatchReturnSingle[T, R any](pvwa *PVWA, path string, query *url.Values, data T) (*R, error) {
+func patchReturnSingle[T, R any](pvwa *PVWA, path string, query *url.Values, data T) (*R, error) {
 	_path := buildPath(path, query)
 
 	response := new(R)

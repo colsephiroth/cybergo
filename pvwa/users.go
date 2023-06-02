@@ -1,7 +1,6 @@
 package pvwa
 
 import (
-	"encoding/json"
 	"net/url"
 )
 
@@ -23,22 +22,6 @@ func (p *PVWA) GetUsers() *GetUsersOptions {
 }
 
 func (u *GetUsersOptions) Run() ([]*UserDetails, error) {
-	path := buildPath(u.path, u.query)
-
-	var data GetUsersResponse
-
-	u.pvwa.logIfEnabled(path)
-
-	res, err := u.pvwa.Get(path)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := json.NewDecoder(res).Decode(&data); err != nil {
-		return nil, err
-	}
-
-	u.pvwa.logIfError(res.Close)
-
-	return data.Users, nil
+	res, err := getReturnSingle[GetUsersResponse](u.pvwa, u.path, u.query)
+	return res.Users, err
 }
