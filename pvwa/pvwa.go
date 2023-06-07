@@ -202,6 +202,31 @@ func (p *PVWA) Patch(path string, data []byte) (io.ReadCloser, error) {
 	return res.Body, nil
 }
 
+func (p *PVWA) Delete(path string) (io.ReadCloser, error) {
+	req, err := http.NewRequest(http.MethodDelete, p.base+path, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Authorization", p.authorization)
+
+	res, err := p.Client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	if !httpStatusSuccess(res.StatusCode) {
+		body, err := io.ReadAll(res.Body)
+		if err != nil {
+			return nil, err
+		}
+		p.logIfError(res.Body.Close)
+		return nil, fmt.Errorf("%s: %s", res.Status, string(body))
+	}
+
+	return res.Body, nil
+}
+
 func (p *PVWA) logIfEnabled(s string) {
 	if p.logging {
 		log.Println(s)

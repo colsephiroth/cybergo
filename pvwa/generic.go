@@ -144,6 +144,21 @@ func patchReturnSingle[T, R any](pvwa *PVWA, path string, query *url.Values, dat
 	return response, nil
 }
 
+func deleteReturnNone(pvwa *PVWA, path string, query *url.Values) error {
+	_path := buildPath(path, query)
+
+	pvwa.logIfEnabled(fmt.Sprintf("DELETE %s", _path))
+
+	res, err := pvwa.Delete(_path)
+	if err != nil {
+		pvwa.logIfEnabled(err.Error())
+		return err
+	}
+	defer pvwa.logIfError(res.Close)
+
+	return nil
+}
+
 func Intersection[T comparable](s1, s2 []T) []T {
 	var intersection []T
 	m := make(map[T]any)
