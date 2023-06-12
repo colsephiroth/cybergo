@@ -8,10 +8,11 @@ type GetAccountsOptions struct {
 	pvwa  *PVWA
 }
 
-type GetAccountDetailsOptions struct {
-	path  string
-	query *url.Values
-	pvwa  *PVWA
+type NewAccountOptions struct {
+	path    string
+	query   *url.Values
+	pvwa    *PVWA
+	account *AccountDetails
 }
 
 type UpdateAccountOptions struct {
@@ -19,6 +20,43 @@ type UpdateAccountOptions struct {
 	query      *url.Values
 	pvwa       *PVWA
 	operations []UpdateAccountOperation
+}
+
+type ChangePasswordOptions struct {
+	path             string
+	query            *url.Values
+	pvwa             *PVWA
+	changeProperties *ChangeCredentialsNow
+}
+
+type CheckInOptions struct {
+	path  string
+	query *url.Values
+	pvwa  *PVWA
+}
+
+type GrantAdministrativeAccessOptions struct {
+	path  string
+	query *url.Values
+	pvwa  *PVWA
+}
+
+type DeleteLinkedAccountOptions struct {
+	path  string
+	query *url.Values
+	pvwa  *PVWA
+}
+
+type RetrievePasswordOptions struct {
+	path  string
+	query *url.Values
+	pvwa  *PVWA
+}
+
+type GetAccountDetailsOptions struct {
+	path  string
+	query *url.Values
+	pvwa  *PVWA
 }
 
 // WithSavedFilter Search for accounts using a saved filter(s).
