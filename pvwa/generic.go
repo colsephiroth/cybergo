@@ -3,6 +3,7 @@ package pvwa
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/url"
 )
 
@@ -119,31 +120,25 @@ func postReturnSingle[T, R any](pvwa *PVWA, path string, query *url.Values, data
 func postReturnNone[T any](pvwa *PVWA, path string, query *url.Values, data T) error {
 	_path := buildPath(path, query)
 
-	if data == nil {
-		pvwa.logIfEnabled(fmt.Sprintf("POST %s", _path))
-
-		res, err := pvwa.Post(_path, nil)
-		if err != nil {
-			pvwa.logIfEnabled(err.Error())
-			return err
-		}
-		defer pvwa.logIfError(res.Close)
-	} else {
-		_data, err := json.Marshal(data)
-		if err != nil {
-			pvwa.logIfEnabled(err.Error())
-			return err
-		}
-
-		pvwa.logIfEnabled(fmt.Sprintf("POST %s %s", _path, string(_data)))
-
-		res, err := pvwa.Post(_path, _data)
-		if err != nil {
-			pvwa.logIfEnabled(err.Error())
-			return err
-		}
-		defer pvwa.logIfError(res.Close)
+	_data, err := json.Marshal(data)
+	if err != nil {
+		pvwa.logIfEnabled(err.Error())
+		return err
 	}
+
+	pvwa.logIfEnabled(fmt.Sprintf("POST %s %s", _path, string(_data)))
+
+	var res io.ReadCloser
+	if string(_data) == "null" {
+		res, err = pvwa.Post(_path, nil)
+	} else {
+		res, err = pvwa.Post(_path, _data)
+	}
+	if err != nil {
+		pvwa.logIfEnabled(err.Error())
+		return err
+	}
+	defer pvwa.logIfError(res.Close)
 
 	return nil
 }
