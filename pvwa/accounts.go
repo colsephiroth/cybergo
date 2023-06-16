@@ -95,7 +95,7 @@ func (p *PVWA) CheckIn(id string) *CheckInOptions {
 }
 
 func (a *CheckInOptions) Run() error {
-	return postReturnNone(a.pvwa, a.path, a.query, nil)
+	return postReturnNone[any](a.pvwa, a.path, a.query, nil)
 }
 
 // GrantAdministrativeAccess This method requests and receives access to a target Windows machine with
@@ -115,7 +115,7 @@ func (p *PVWA) GrantAdministrativeAccess(id string) *GrantAdministrativeAccessOp
 }
 
 func (a *GrantAdministrativeAccessOptions) Run() error {
-	return postReturnNone(a.pvwa, a.path, a.query, nil)
+	return postReturnNone[any](a.pvwa, a.path, a.query, nil)
 }
 
 // DeleteLinkedAccount This method enables a user to remove association between linked account and source account.
